@@ -1,0 +1,6 @@
+jdk:
+  - openjdk11
+
+install:
+  - ./gradlew --no-daemon -Pjitpack=true :line-sdk:clean :line-sdk:assembleRelease :line-sdk:publishToMavenLocal -x test
+

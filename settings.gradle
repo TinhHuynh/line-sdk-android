@@ -1,1 +1,10 @@
-include ':app', ':line-sdk'
+def isJitPackBuild =
+        (System.getenv('JITPACK') != null) ||
+        (System.getenv('JITPACK_BUILD') != null) ||
+        (gradle.startParameter.projectProperties.containsKey('jitpack'))
+
+if (isJitPackBuild) {
+    include ':line-sdk'
+} else {
+    include ':app', ':line-sdk'
+}
