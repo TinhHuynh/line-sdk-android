@@ -27,8 +27,9 @@ class CreateOpenChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateOpenChatBinding
 
+    private val channelId: String by lazy { intent.getStringExtra(ARG_CHANNEL_ID).orEmpty() }
+
     private val lineApiClient: LineApiClient by lazy {
-        val channelId = intent.getStringExtra(ARG_CHANNEL_ID).orEmpty()
         LineApiClientBuilder(this, channelId)
             .build()
     }
@@ -38,7 +39,22 @@ class CreateOpenChatActivity : AppCompatActivity() {
     private var currentStep = CreateOpenChatStep.ChatroomInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (channelId.isBlank()) {
+            super.onCreate(null)
+
+            setResult(
+              RESULT_CANCELED,
+                Intent().putExtra(
+                    ARG_ERROR_RESULT,
+                    LineApiError("Missing channelId. Start CreateOpenChatActivity via createIntent(context, channelId).")
+                )
+            )
+            finish()
+            return
+        }
+
         super.onCreate(savedInstanceState)
+
         binding = ActivityCreateOpenChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
