@@ -171,6 +171,12 @@ task javadoc_public(type: Javadoc) {
     source = javadocParams.source
     classpath += javadocParams.classpath
     classpath += configurations.javadocs
+    // Include compile dependencies to resolve symbols (e.g. androidx, external libs)
+    android.libraryVariants.all { variant ->
+        if (variant.name == 'release') {
+            classpath += variant.javaCompileProvider.get().classpath
+        }
+    }
     include javadocParams.includes['public']
 
     failOnError false
@@ -208,6 +214,11 @@ task javadoc(type: Javadoc) {
     source = javadocParams.source
     classpath += javadocParams.classpath
     classpath += configurations.javadocs
+    android.libraryVariants.all { variant ->
+        if (variant.name == 'release') {
+            classpath += variant.javaCompileProvider.get().classpath
+        }
+    }
     include javadocParams.includes.internal
 
     failOnError false
@@ -302,9 +313,11 @@ afterEvaluate {
     signing {
         def key = findProperty('signingKey')
         def pw = findProperty('signingPassword')
-        required { signingKey != null && signingPassword != null }
-        useInMemoryPgpKeys(key, pw)
-        sign publishing.publications
+        
+        if (key != null && pw != null) {
+            useInMemoryPgpKeys(key, pw)
+            sign publishing.publications
+        }
     }
 }
 
