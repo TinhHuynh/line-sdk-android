@@ -48,6 +48,19 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // JitPack runs `assemble` which triggers release-only tasks like `lintVitalAnalyzeRelease`.
+    // The sample app is not part of the published SDK; disabling release lint avoids OOM/Metaspace
+    // failures during CI publishing.
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+}
+
+// `-xlint` does not exclude `lintVitalAnalyzeRelease`; disable them explicitly for the sample app.
+tasks.matching { it.name.startsWith("lintVital") }.configureEach {
+    enabled = false
 }
 
 dependencies {

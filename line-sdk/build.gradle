@@ -107,11 +107,11 @@ ext {
             source       : android.sourceSets.main.java.srcDirs,
             classpath    : project.files(android.getBootClasspath().join(File.pathSeparator)),
             destDir      : [
-                    public  : new File(project.buildDir, "docs/javadoc_public"),
+                    'public'  : new File(project.buildDir, "docs/javadoc_public"),
                     internal: new File(project.buildDir, "docs/javadocs")
             ],
             includes     : [
-                    public  : [
+                    'public'  : [
                             "**/com/linecorp/linesdk/*.java",
                             "**/com/linecorp/linesdk/api/*.java",
                             "**/com/linecorp/linesdk/auth/*.java",
@@ -162,7 +162,7 @@ group = publishedGroupId
 
 task javadoc_public(type: Javadoc) {
     group javadocParams.taskGroup
-    destinationDir = javadocParams.destDir.public
+    destinationDir = javadocParams.destDir['public']
 
     // doclava doesn't support `title`
     title = null
@@ -171,7 +171,7 @@ task javadoc_public(type: Javadoc) {
     source = javadocParams.source
     classpath += javadocParams.classpath
     classpath += configurations.javadocs
-    include javadocParams.includes.public
+    include javadocParams.includes['public']
 
     failOnError false
 
@@ -207,6 +207,7 @@ task javadoc(type: Javadoc) {
 
     source = javadocParams.source
     classpath += javadocParams.classpath
+    classpath += configurations.javadocs
     include javadocParams.includes.internal
 
     failOnError false
@@ -219,6 +220,8 @@ task javadoc(type: Javadoc) {
         encoding javadocParams.encoding
 
         links = javadocParams.externalLinks
+        
+        options.addStringOption("sourcepath", files(javadocParams.source).asPath)
     }
 }
 
